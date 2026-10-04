@@ -1,0 +1,60 @@
+#+TITLE: yolokuva
+#+STARTUP: content
+
+=yolokuva= gets local images ready for multimodal model prompts: it recognizes
+PNG, JPEG, GIF, and WebP files from their leading octets, reads their pixel
+dimensions without decoding them, decides how to bring them within a
+provider's size limits, resizes them through opticl when needed, and encodes
+them as data URLs.
+
+* Systems
+
+- =yolokuva= has no dependencies: recognition, inspection, size limits, and
+  data URLs.
+- =yolokuva/opticl= adds =image-write-prepared=, which decodes and resizes
+  through opticl.
+
+* Recognition and inspection
+
+=image-format= names the format a vector of octets begins with, and
+=image-dimensions= reads the width and height from the format's header.
+=image-inspect= does both for a file, reading only the first
+=*image-inspection-prefix-octets*= octets, except for a JPEG, whose frame
+header can follow any amount of metadata. =image-read-octets= reads a whole
+file; both accept =:maximum-octets= to refuse oversized files before reading.
+
+* Size limits
+
+Providers bound a prompt image by its longest side and by how many square
+token patches it covers. =image-dimensions-fit-p= and =image-target-dimensions=
+take =:maximum-dimension=, =:patch-size=, and =:maximum-patches=, defaulting to
+the OpenAI high-detail limits (2048, 32, 2500). =image-preparation= returns the
+output format and size: a fitting PNG or JPEG stays as it is, everything else
+becomes a PNG of the target size, and a WebP image too large to send is
+refused, since it cannot be decoded here.
+
+#+begin_src lisp
+(multiple-value-bind (format width height) (yolokuva:image-inspect source)
+  (multiple-value-bind (output-format target-width target-height)
+      (yolokuva:image-preparation format width height)
+    (yolokuva:image-write-prepared source output
+                                   :source-format format
+                                   :output-format output-format
+                                   :width target-width
+                                   :height target-height)
+    (yolokuva:image-data-url (yolokuva:image-read-octets output)
+                             (yolokuva:image-mime-type output-format))))
+#+end_src
+
+Writing the output atomically, choosing where it lives, and its permissions are
+left to the host.
+
+* Failures
+
+Failures signal =image-error= with a message, the pathname, and a stage among
+=:recognition=, =:decoding=, and =:resizing=. A host can bind
+=*image-error-class*= to its own subclass that accepts the same initargs.
+
+* License
+
+COLL-Attribution; see =LICENSE.lisp=.
