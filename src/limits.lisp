@@ -61,7 +61,7 @@ the :RESIZING stage otherwise, because it cannot be decoded here. LIMITS are
 the keyword arguments of IMAGE-TARGET-DIMENSIONS; PATHNAME labels failures."
   (multiple-value-bind (target-width target-height)
       (apply #'image-target-dimensions width height
-             (loop for (key value) on limits by #'cddr
+             (loop for (key value) on limits by (lambda (plist) (nthcdr 2 plist))
                    unless (eq key :pathname)
                      append (list key value)))
     (let ((fits-p (and (= width target-width) (= height target-height))))
