@@ -70,9 +70,9 @@
                (merge-pathnames (format nil "yolokuva-tests-~D/" (random most-positive-fixnum))
                                 (uiop:temporary-directory)))))
     (unwind-protect
-         (let ((png (write-octets (merge-pathnames "a.png" root) *tiny-png*))
-               (jpeg (write-octets (merge-pathnames "b.jpg" root) *tiny-jpeg*))
-               (text (write-octets (merge-pathnames "c.txt" root) (octets "not an image")))
+         (let ((png       (write-octets (merge-pathnames "a.png" root) *tiny-png*))
+               (jpeg      (write-octets (merge-pathnames "b.jpg" root) *tiny-jpeg*))
+               (text      (write-octets (merge-pathnames "c.txt" root) (octets "not an image")))
                (empty-gif (write-octets (merge-pathnames "d.gif" root) (octets "GIF89a" 0 0 0 0))))
            (check (equal (multiple-value-list (image-inspect png)) '(:png 1 1))
                   "a PNG file inspects from its prefix")
@@ -124,8 +124,8 @@
                (merge-pathnames (format nil "yolokuva-prepare-~D/" (random most-positive-fixnum))
                                 (uiop:temporary-directory)))))
     (unwind-protect
-         (let ((tiny (write-octets (merge-pathnames "tiny.png" root) *tiny-png*))
-               (large (merge-pathnames "large.png" root))
+         (let ((tiny   (write-octets (merge-pathnames "tiny.png" root) *tiny-png*))
+               (large  (merge-pathnames "large.png" root))
                (broken (write-octets (merge-pathnames "broken.png" root)
                                      (subseq *tiny-png* 0 40))))
            (image-write-prepared tiny (merge-pathnames "copy.png" root)

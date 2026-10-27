@@ -47,7 +47,7 @@
 (defun image--jpeg-dimensions (octets)
   "Return the width and height in a JPEG's first frame header, or 0 and 0."
   (let ((position 2)
-        (length (length octets)))
+        (length   (length octets)))
     (loop while (< (+ position 3) length)
           do (if (/= (aref octets position) #xff)
                  (incf position)
@@ -123,10 +123,14 @@ JPEG, whose frame header can follow arbitrarily large metadata."
 (defun image-mime-type (format)
   "Return the media type of image FORMAT."
   (ecase format
-    (:png "image/png")
-    (:jpeg "image/jpeg")
-    (:gif "image/gif")
-    (:webp "image/webp")))
+    (:png
+     "image/png")
+    (:jpeg
+     "image/jpeg")
+    (:gif
+     "image/gif")
+    (:webp
+     "image/webp")))
 
 
 ;;;; -- Inspecting Files --
@@ -154,19 +158,19 @@ PATHNAME labels failures. An unsupported format or missing dimensions signal
 *IMAGE-ERROR-CLASS* at the :RECOGNITION stage."
   (let* ((prefix (make-array *image-inspection-prefix-octets*
                              :element-type '(unsigned-byte 8)))
-         (count (read-sequence prefix stream))
+         (count  (read-sequence prefix stream))
          (octets (subseq prefix 0 count))
          (format (image-format octets))
-         (label (or pathname "The image")))
+         (label  (or pathname "The image")))
     (unless format
       (image--fail :recognition (format nil "~A is not a PNG, JPEG, GIF, or WebP image." label)
-                   :pathname pathname))
+                   :pathname    pathname))
     (when (eq format :jpeg)
       (setf octets (image--read-rest stream octets)))
     (multiple-value-bind (width height) (image-dimensions format octets)
       (unless (and (plusp width) (plusp height))
         (image--fail :recognition (format nil "~A has no valid pixel dimensions." label)
-                     :pathname pathname))
+                     :pathname    pathname))
       (values format width height))))
 
 (defun image--open-checked (pathname maximum-octets function)

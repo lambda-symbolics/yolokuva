@@ -33,22 +33,22 @@ the longest side, then, when it still covers too many patches, by the square
 root of the patch excess, rounded down to whole patches."
   (flet ((fits-p (width height)
            (image-dimensions-fit-p width height :maximum-dimension maximum-dimension
-                                                :patch-size patch-size
-                                                :maximum-patches maximum-patches)))
+                                                :patch-size        patch-size
+                                                :maximum-patches   maximum-patches)))
     (if (fits-p width height)
         (values width height)
-        (let* ((side-scale (min 1.0d0 (/ maximum-dimension (coerce (max width height) 'double-float))))
-               (scaled-width (max 1 (round (* width side-scale))))
+        (let* ((side-scale    (min 1.0d0 (/ maximum-dimension (coerce (max width height) 'double-float))))
+               (scaled-width  (max 1 (round (* width side-scale))))
                (scaled-height (max 1 (round (* height side-scale)))))
           (if (fits-p scaled-width scaled-height)
               (values scaled-width scaled-height)
-              (let* ((patch (coerce patch-size 'double-float))
-                     (scale (sqrt (/ (* patch patch maximum-patches)
-                                     (* (coerce scaled-width 'double-float) scaled-height))))
+              (let* ((patch        (coerce patch-size 'double-float))
+                     (scale        (sqrt (/ (* patch patch maximum-patches)
+                                            (* (coerce scaled-width 'double-float) scaled-height))))
                      (patches-wide (/ (* scaled-width scale) patch))
                      (patches-high (/ (* scaled-height scale) patch))
-                     (adjusted (* scale (min (/ (floor patches-wide) patches-wide)
-                                             (/ (floor patches-high) patches-high)))))
+                     (adjusted     (* scale (min (/ (floor patches-wide) patches-wide)
+                                                 (/ (floor patches-high) patches-high)))))
                 (values (max 1 (floor (* scaled-width adjusted)))
                         (max 1 (floor (* scaled-height adjusted))))))))))
 
