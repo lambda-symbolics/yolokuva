@@ -1,5 +1,16 @@
 (defpackage #:yolokuva/tests
-  (:use #:cl #:yolokuva)
+  (:use #:cl)
+  (:import-from #:yolokuva
+                #:image-data-url
+                #:image-dimensions
+                #:image-error
+                #:image-error-stage
+                #:image-format
+                #:image-inspect
+                #:image-preparation
+                #:image-read-octets
+                #:image-target-dimensions
+                #:image-write-prepared)
   (:export #:run-tests))
 
 (in-package #:yolokuva/tests)
