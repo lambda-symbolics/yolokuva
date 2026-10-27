@@ -1,4 +1,5 @@
 (defpackage #:yolokuva
+  (:documentation "Recognize, measure, size, and encode images for multimodal model prompts.")
   (:use #:cl)
   (:export
    ;; conditions
