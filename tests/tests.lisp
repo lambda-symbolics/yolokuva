@@ -1,4 +1,5 @@
 (defpackage #:yolokuva/tests
+  (:documentation "Tests for yolokuva.")
   (:use #:cl)
   (:import-from #:yolokuva
                 #:image-data-url
