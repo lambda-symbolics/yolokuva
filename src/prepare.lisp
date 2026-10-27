@@ -52,5 +52,8 @@ when needed, and written as an eight-bit PNG. A WebP image is only ever copied."
                  decoded
                  (opticl:resize-image decoded height width :interpolate :bilinear)))))
           (t
-           (error "Cannot prepare a ~A image as ~A." source-format output-format)))))
+           (image--fail :resizing
+                        (format nil "Image ~A cannot be prepared as ~A from ~A."
+                                source output-format source-format)
+                        :pathname source)))))
   output)

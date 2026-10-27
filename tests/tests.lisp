@@ -146,7 +146,13 @@
                                                           :source-format :png :output-format :png
                                                           :width 1 :height 1)))
                       :decoding)
-                  "an image that does not decode fails at the decoding stage"))
+                  "an image that does not decode fails at the decoding stage")
+           (check (eq (fail-stage (lambda ()
+                                    (image-write-prepared tiny (merge-pathnames "x.jpeg" root)
+                                                          :source-format :png :output-format :jpeg
+                                                          :width 1 :height 1)))
+                      :resizing)
+                  "an output format other than PNG fails at the resizing stage"))
       (uiop:delete-directory-tree root :validate t :if-does-not-exist :ignore))))
 
 (defun run-tests ()
