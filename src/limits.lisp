@@ -2,9 +2,9 @@
 
 ;;;; -- Provider Size Limits --
 
-;;; Providers bound a prompt image by its longest side and by how many square
-;;; patches it covers. The defaults are the OpenAI high-detail limits Codex
-;;; uses; pass other limits as keyword arguments.
+;;; Providers generally bound images by their longest side and by how many square
+;;; patches they cover. The defaults are the OpenAI high-detail limits Codex
+;;; uses, you can pass other limits as keyword arguments.
 
 (defparameter *image-maximum-dimension* 2048
   "The default longest permitted image side in pixels.")
@@ -28,9 +28,9 @@
                                                   (maximum-patches *image-maximum-patches*))
   "Return the largest width and height within the size limits that keep WIDTH:HEIGHT.
 
-An image already within them keeps its size. A larger one is first scaled to
-the longest side, then, when it still covers too many patches, by the square
-root of the patch excess, rounded down to whole patches."
+Images larger than the limit are first scaled to the longest side, then, if 
+they still cover too many patches, by the square root of the patch excess,
+rounded down to whole patches."
   (flet ((fits-p (width height)
            (image-dimensions-fit-p width height :maximum-dimension maximum-dimension
                                                 :patch-size        patch-size
@@ -53,12 +53,15 @@ root of the patch excess, rounded down to whole patches."
                         (max 1 (floor (* scaled-height adjusted))))))))))
 
 (defun image-preparation (format width height &rest limits &key pathname &allow-other-keys)
-  "Return the output format, width, and height that make an image fit the size limits.
+  "Return the output format, width, and height that make an image fit
+into the size limits.
 
-A PNG or JPEG within the limits is kept as it is; anything else becomes a PNG
-of the target dimensions. A WebP image is kept when it fits, and refused at
-the :RESIZING stage otherwise, because it cannot be decoded here. LIMITS are
-the keyword arguments of IMAGE-TARGET-DIMENSIONS; PATHNAME labels failures."
+PNGs and JPEGs within the limits are left untouched, other images are turned into PNGs
+with target dimensions.
+WebP images are kept if they fit, but refused at the :RESIZING stage otherwise, because
+we cannot decode them here yet.
+
+LIMITS are the keyword arguments of IMAGE-TARGET-DIMENSIONS; failures are labeled by PATHNAME."
   (multiple-value-bind (target-width target-height)
       (apply #'image-target-dimensions width height
              (loop for (key value) on limits by (lambda (plist) (nthcdr 2 plist))

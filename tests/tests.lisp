@@ -45,7 +45,7 @@
 
 (defparameter *tiny-jpeg*
   (octets 255 216 255 192 0 11 8 0 2 0 3 1 1 17 0 255 217)
-  "A JPEG whose frame header declares three by two pixels.")
+  "A JPEG with a frame header which declares three by two pixels.")
 
 (defun write-octets (pathname octets)
   "Write OCTETS to the file PATHNAME."
@@ -72,12 +72,12 @@
                  (image-dimensions :webp (octets "RIFF" 0 0 0 0 "WEBP" "VP8X" 0 0 0 0 0 0 0 0
                                                  99 0 0 49 0 0)))
                 '(100 50))
-         "extended WebP dimensions come from the canvas header")
+         "extended WebP dimensions are contained in the canvas header")
   (check (equal (multiple-value-list (image-dimensions :png (octets 137 80 78 71))) '(0 0))
-         "a truncated header gives no dimensions"))
+         "a truncated header does not contain any dimensions"))
 
 (defun test-inspection ()
-  "Test inspecting image files and refusing unusable ones."
+  "Test that inspecting image files and refusing unusable ones works."
   (let ((root (uiop:ensure-directory-pathname
                (merge-pathnames (format nil "yolokuva-tests-~D/" (random most-positive-fixnum))
                                 (uiop:temporary-directory)))))

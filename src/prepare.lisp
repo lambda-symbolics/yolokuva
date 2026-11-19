@@ -32,10 +32,15 @@
 (defun image-write-prepared (source output &key source-format output-format width height)
   "Write the prompt-ready form of image file SOURCE to the file OUTPUT.
 
-SOURCE-FORMAT is what IMAGE-INSPECT reported; OUTPUT-FORMAT, WIDTH, and HEIGHT
-are what IMAGE-PREPARATION chose. An image that keeps its format and size is
-checked to decode and then copied unchanged; otherwise it is decoded, resized
-when needed, and written as an eight-bit PNG. A WebP image is only ever copied."
+SOURCE-FORMAT is the format reported by IMAGE-INSPECT;
+OUTPUT-FORMAT, WIDTH, and HEIGHT are the decisions made by IMAGE-PREPARATION,
+which may have to resize images or convert their formats.
+
+For the images that require no changes, we validate that they decode and then
+copy them unchanged. Other images are decoded, resized when needed, and written
+an eight-bit PNGs.
+
+WebP images are only copied."
   (if (eq source-format :webp)
       (uiop:copy-file source output)
       (let* ((decoded     (image--decode source source-format))

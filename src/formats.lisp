@@ -7,14 +7,14 @@
   '(vector (unsigned-byte 8)))
 
 (defun image--octets-at-p (octets start expected)
-  "Return true when OCTETS holds the octet list EXPECTED beginning at START."
+  "Return true when OCTETS contains the octet list EXPECTED beginning at START."
   (and (<= (+ start (length expected)) (length octets))
        (loop for octet in expected
              for index from start
              always (= (aref octets index) octet))))
 
 (defun image--ascii-at-p (octets start expected)
-  "Return true when OCTETS holds the ASCII string EXPECTED beginning at START."
+  "Return true when OCTETS contains the ASCII string EXPECTED beginning at START."
   (image--octets-at-p octets start (map 'list #'char-code expected)))
 
 (defun image--little-endian (octets start count)
@@ -139,7 +139,7 @@ JPEG, whose frame header can follow arbitrarily large metadata."
   "The leading octets that identify every format and give every non-JPEG size.")
 
 (defun image--read-rest (stream prefix)
-  "Return PREFIX followed by every remaining octet of STREAM."
+  "Return PREFIX and every remaining octet of STREAM."
   (let ((result (make-array (length prefix) :element-type '(unsigned-byte 8)
                                             :adjustable t :fill-pointer t))
         (buffer (make-array 65536 :element-type '(unsigned-byte 8))))
@@ -153,8 +153,8 @@ JPEG, whose frame header can follow arbitrarily large metadata."
 (defun image-inspect-stream (stream &key pathname)
   "Return the format, width, and height of the image an octet STREAM holds.
 
-Only a JPEG is read past its first *IMAGE-INSPECTION-PREFIX-OCTETS* octets.
-PATHNAME labels failures. An unsupported format or missing dimensions signal
+Only JPEGs are read past the first *IMAGE-INSPECTION-PREFIX-OCTETS* octets.
+Failures are labeled by a PATHNAME. Unsupported formats or missing dimensions signal
 *IMAGE-ERROR-CLASS* at the :RECOGNITION stage."
   (let* ((prefix (make-array *image-inspection-prefix-octets*
                              :element-type '(unsigned-byte 8)))
@@ -186,7 +186,7 @@ PATHNAME labels failures. An unsupported format or missing dimensions signal
 (defun image-inspect (pathname &key maximum-octets)
   "Return the format, width, and height of the image file PATHNAME.
 
-A file larger than MAXIMUM-OCTETS, when given, is refused before reading."
+A file larger than MAXIMUM-OCTETS, when given, will be refused and won't be read."
   (image--open-checked pathname maximum-octets
                        (lambda (stream length)
                          (declare (ignore length))
