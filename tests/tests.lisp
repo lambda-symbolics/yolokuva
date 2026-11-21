@@ -167,10 +167,22 @@
                   "an output format other than PNG fails at the resizing stage"))
       (uiop:delete-directory-tree root :validate t :if-does-not-exist :ignore))))
 
+(defun test-format-metadata ()
+  "Test the canonical MIME and extension mapping."
+  (dolist (entry '((:png "image/png" "png") (:jpeg "image/jpeg" "jpg")
+                   (:gif "image/gif" "gif") (:webp "image/webp" "webp")))
+    (destructuring-bind (format mime extension) entry
+      (check (string= (yolokuva:image-mime-type format) mime) "format MIME")
+      (check (string= (yolokuva:image-format-extension format) extension) "format extension")
+      (check (eq (yolokuva:image-format-for-mime-type (string-upcase mime)) format)
+             "MIME lookup ignores case")))
+  (check (null (yolokuva:image-format-for-mime-type "image/unknown")) "unknown MIME"))
+
 (defun run-tests ()
   "Run every yolokuva test and return true."
   (setf *checks* 0)
   (test-recognition)
+  (test-format-metadata)
   (test-inspection)
   (test-limits)
   (test-data-urls)

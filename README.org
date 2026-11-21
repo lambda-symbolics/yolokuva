@@ -22,6 +22,9 @@ them as data URLs.
 =*image-inspection-prefix-octets*= octets, except for a JPEG, whose frame
 header can follow any amount of metadata. =image-read-octets= reads a whole
 file; both accept =:maximum-octets= to refuse oversized files before reading.
+=image-mime-type= and =image-format-extension= return the media type and
+canonical filename extension for a format. =image-format-for-mime-type= looks
+up a media type case-insensitively and returns NIL when it is unsupported.
 
 * Size limits
 

@@ -17,6 +17,8 @@
    #:image-inspect-stream
    #:image-read-octets
    #:image-mime-type
+   #:image-format-extension
+   #:image-format-for-mime-type
    ;; limits
    #:*image-maximum-dimension*
    #:*image-patch-size*

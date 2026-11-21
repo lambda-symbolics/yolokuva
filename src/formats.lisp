@@ -120,17 +120,29 @@ JPEG, whose frame header can follow arbitrarily large metadata."
     (:webp
      (image--webp-dimensions octets))))
 
+(defparameter *image-format-metadata*
+  '((:png "image/png" "png")
+    (:jpeg "image/jpeg" "jpg")
+    (:gif "image/gif" "gif")
+    (:webp "image/webp" "webp"))
+  "Supported formats, their media types, and canonical filename extensions.")
+
+(defun image--format-metadata (format)
+  "Return the metadata for FORMAT, rejecting unsupported formats."
+  (check-type format (member :png :jpeg :gif :webp))
+  (assoc format *image-format-metadata*))
+
 (defun image-mime-type (format)
   "Return the media type of image FORMAT."
-  (ecase format
-    (:png
-     "image/png")
-    (:jpeg
-     "image/jpeg")
-    (:gif
-     "image/gif")
-    (:webp
-     "image/webp")))
+  (second (image--format-metadata format)))
+
+(defun image-format-extension (format)
+  "Return the canonical filename extension of image FORMAT."
+  (third (image--format-metadata format)))
+
+(defun image-format-for-mime-type (mime-type)
+  "Return the image format for MIME-TYPE, or NIL when unsupported."
+  (first (find mime-type *image-format-metadata* :key #'second :test #'string-equal)))
 
 
 ;;;; -- Inspecting Files --
